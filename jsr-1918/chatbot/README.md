@@ -1,32 +1,13 @@
-# Chatbot!
+# HAL 9000 CHATBOT!
 
-## Our favorite AI nemesis, HAL9000 vs. Dave Bowman
+## HAL9000 vs. Dave Bowman
 
-* Construct a chatbot that responds to various inputs from Dave
-* Feel free to use the HTML and CSS scaffolds or construct your own
-* Be creative with your logic and responses!
-* Feel free to also change the characters and anything in the starter code—be creative!
+* HAL 9000 will respond to various inputs including greetings, questions and commands.
+* "Hi" an "Hello" will generate a response from HAL 9000 with a randomly generated classmates name
+*	Asking HAL 9000 "Who is on board the ship?" will generate a response of 3 people HAL 9000 detects on board.
+* Any question will result in generated response from HAL 9000
+* Making the command from the film 2001: A Space Odyssey "Open the pod bay doors, Hal" will generate HAL 9000's response from the film
 
-## Grading Rubric (Pass/Partial/Fail)
 
-### Required
 
-* Have the AI respond to user input
-* Do at least 3 different things
-* One of the commands must utilize the list of people in the class to send a reply
-* Use at least 1 conditional to change the response
-* Leverage a for loop to iterate over a collection
-* Use a random component
-* Go above and beyond simple `if/else` statements
 
-### Stretch Goals
-
-* Have 2 or more AIs responding based upon user input
-* Use a regular expression to parse and manipulate the response
-* Have a conversation between two AIs (without creating an infinite loop!)
-
-## Deliverables
-
-* A working chatbot hosted somewhere publicly accessible (CodePen, Github Pages, etc.)
-* A new git respository containing your code
-* A `README.md` file with explanations of what your bot does, what commands it responds to, the approach taken, unsolved problems, etc.
