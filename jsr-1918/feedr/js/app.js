@@ -3,17 +3,29 @@
 */
 
 $(document).ready(function () {
-
   // LOAD INITIAL ARTICLES
-  newYorkTimes();
+  allSources();
 
   // LOAD NEW ARTICLES ON SOURCE SELECTION
   $('#source-list a').click(function () {
-    if($(this).hasClass('new-york-times')) {
-      newYorkTimes();
-    } else if ($(this).hasClass('bbc-news')) {
-      bbcNews();
-  	}
+    if($(this).hasClass('espn')) {
+      espn();
+    } else if ($(this).hasClass('fox-sports')) {
+      foxSports();
+    } else if ($(this).hasClass('bbc-sport')) {
+      bbcSport();
+    }
+  });
+
+  $('#home-link').click(function () {
+    allSources();
+  });
+
+  $('body').on('click', 'article', function () {
+    var title = $(this).children('.source-title')[0].innerText;
+    var summary = $(this).children('summary')[0].innerText;
+    var link = $(this).children('a.source-link')[0].href;
+    showPopup(title, summary, link);
   });
 
   $('.closePopUp').click(function () {
@@ -25,74 +37,53 @@ $(document).ready(function () {
   });
 })
 
-/// /////////////////////////////////
-///  Source: NY Times
-/// /////////////////////////////////
+// LOAD ALL SOURCES ARTICLES
+function allSources() {
+  var source = 'All Sources',
+      url = 'https://newsapi.org/v2/top-headlines?' +
+            'sources=espn,fox-sports,bbc-sport&' +
+            'apiKey=6d3f1888cd1a41ab91f7cdfdebb1ab1e';
 
-function newYorkTimes() {
-  $('#popUp').addClass('loader').removeClass('hidden');
-  $('article').remove();
-  var url = "https://api.nytimes.com/svc/topstories/v2/home.json";
-  url += '?' + $.param({'api-key': "3d880d5967c649b595beb5e5eaba12ae"});
-  var results = [];
-  $.ajax({
-    url: url,
-    method: 'GET'
-  }).success(function (result) {
-    var articles = result["results"];
-    for (i = 0; i < articles.length; i++) {
-      results.push({
-        title: articles[i]["title"],
-        content: articles[i]["abstract"],
-        link: articles[i]["url"],
-        imageSource: getNytImage(articles[i]["multimedia"]),
-        category: getNytCategory(articles[i]),
-        length: articles[i]["abstract"].length
-      });
-    };
-    for (i = 0; i < results.length; i++) {
-      buildArticle(results[i]);
-    }
-    hidePopup(true);
-  }).fail(function (err) {
-    error("the New York Times");
-    console.log(err);
-  });
-  return results;
+  news(source, url);  
+}
 
-  // Get a thumbnail image from a NYT multimedia object
-  function getNytImage(mediaObj) {
-    var img = "";
-    if(mediaObj.length == 0) {
-      img = "images/no.png"
-    } else {
-      img = mediaObj.find(function (obj) {
-        return obj["format"] == "Standard Thumbnail";
-      }).url;
-    }
-    return img;
-  }
+// LOAD ESPN ARTICLES
+function espn() {
+  var source = 'ESPN',
+      url = 'https://newsapi.org/v2/top-headlines?' +
+            'sources=espn&' +
+            'apiKey=6d3f1888cd1a41ab91f7cdfdebb1ab1e';
 
-  // Get the category
-  function getNytCategory(resultObj) {
-    var category = resultObj["section"];
-    if (resultObj["subsection"].length > 0) {
-      category += " - " + resultObj["subsection"];
-    }
-    return category;
-  }
+  news(source, url); 
+}
+
+// LOAD FOX SPORTS ARTICLES
+function foxSports() {
+  var source = 'Fox Sports',
+      url = 'https://newsapi.org/v2/top-headlines?' +
+            'sources=fox-sports&' +
+            'apiKey=6d3f1888cd1a41ab91f7cdfdebb1ab1e';
+
+  news(source, url);
+}
+// LOAD BBC SPORT ARTICLES
+function bbcSport() {
+  var source = 'BBC Sport',
+  url = 'https://newsapi.org/v2/top-headlines?' +
+        'sources=bbc-sport&' +
+        'apiKey=6d3f1888cd1a41ab91f7cdfdebb1ab1e';
+
+  news(source, url);
 }
 
 /// /////////////////////////////////
-///  Source: BBC News 
+///  RETRIEVE SOURCES
 /// /////////////////////////////////
 
-function bbcNews() {
+function news(source, url) {
   $('#popUp').addClass('loader').removeClass('hidden');
   $('article').remove();
-  var url = "https://newsapi.org/v2/top-headlines";
-  url += '?' + $.param({'sources': 'bbc-news'});
-  url += '&' + $.param({'apiKey': '6d3f1888cd1a41ab91f7cdfdebb1ab1e'});
+
   var results = [];
   $.ajax({
     url: url,
@@ -100,22 +91,26 @@ function bbcNews() {
   }).success(function (result) {
     var articles = result.articles;
     for(var i in articles) {
-      thisArticle = articles[i];
-      results.push({
-        title: thisArticle["title"],
-        content: thisArticle["description"],
-        link: thisArticle["url"],
-        imageSource: thisArticle["urlToImage"],
-        category: "BBC News",
-        //length: thisArticle[i]["description"].length
-      });
-      for(var i in results) {
-        buildArticle(results[i]);
+      var thisArticle = articles[i],
+          date = thisArticle["publishedAt"].split('T')[0]
+      if(thisArticle["title"] != "") {
+        results.push({
+          title: thisArticle["title"],
+          content: thisArticle["description"],
+          link: thisArticle["url"],
+          imageSource: thisArticle["urlToImage"],
+          category: thisArticle["source"]["name"],
+          date: date
+        });
       }
     }
+    for(var i in results) {
+      buildArticle(results[i]);
+    }
+    $('#current-source').text(source);
     hidePopup(true);
   }).fail(function (err) {
-    error("the Economist");
+    error(source);
     console.log(err);
   });
   return results;
@@ -132,7 +127,7 @@ function buildArticle(data) {
     '<h6>'+ data.category +'</h6>' +
     '</section>' +
     '<section class="impressions">' +
-    data["length"] +
+    data["date"] +
     '</section>' +
     '<div class="hidden source-title">'+data.title+'</div>'+
     '<summary class="hidden">'+data.content+'</summary>' +
@@ -147,18 +142,11 @@ function hidePopup(removePopUp) {
   $('#popUp').removeClass('loader');
   if(removePopUp) {
     $('#popUp').addClass('hidden');
-
-    $('article').click(function () {
-      var title = $(this).children('.source-title')[0].innerText;
-      var summary = $(this).children('summary')[0].innerText;
-      var link = $(this).children('a.source-link')[0].href;
-      showPopup(title, summary, link);
-    });
   }
 }
 
 function showPopup(articleTitle, summaryText, articleUrl) {
-  loading();
+  $('#popUp').addClass('loader').removeClass('hidden');
   $('#popUp h1')[0].innerText = articleTitle;
   $('#popUp .container p')[0].innerText = summaryText;
   $('.popUpAction').attr('href', articleUrl);
