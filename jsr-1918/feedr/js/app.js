@@ -116,25 +116,32 @@ function news(source, url) {
   return results;
 }
 
+function error(sourceName) {
+  hidePopup(true);
+  var $error = $('#main .error');
+  $error.removeClass('hidden');
+  if(sourceName.length > 0) {
+    $error.children('.the-source')[0].innerText = sourceName;
+  } else {
+    $error.children('.the-source')[0].innerText = 'the source';
+  }
+  $('a').click(function() {
+    $error.addClass('hidden');
+  });
+  console.log(sourceName);
+}
+
 // Build Articles
 function buildArticle(data) {
-  var articleSec = '<article class="article">' +
-    '<section class="featuredImage">' +
-    '<img src="'+data.imageSource+'" alt="" />' +
-    '</section>' +
-    '<section class="articleContent">' +
+  var article = '<article class="article"><section class="featuredImage">' +
+    '<img src="'+data.imageSource+'" alt="" /></section><section class="articleContent">' +
     '<a href="#"><h3>'+data.title+'</h3></a>' +
-    '<h6>'+ data.category +'</h6>' +
-    '</section>' +
-    '<section class="impressions">' +
-    data["date"] +
-    '</section>' +
-    '<div class="hidden source-title">'+data.title+'</div>'+
-    '<summary class="hidden">'+data.content+'</summary>' +
+    '<h6>'+ data.category +'</h6></section><section class="impressions">' + data["date"] +
+    '</section><div class="hidden source-title">' + data.title + '</div>' +
+    '<summary class="hidden">' + data.content + '</summary>' +
     '<a class="hidden source-link" href="'+data.link+'">'+data.link+'</a>' +
-    '<div class="clearfix"></div>' +
-    '</article>';
-  $('#main').append(articleSec);
+    '<div class="clearfix"></div></article>';
+  $('#main').append(article);
 }
 
 function hidePopup(removePopUp) {
@@ -153,18 +160,5 @@ function showPopup(articleTitle, summaryText, articleUrl) {
   hidePopup();
 }
 
-function error(sourceName) {
-  hidePopup(true);
-  var $errDiv = $('#main .error');
-  $errDiv.removeClass('hidden');
-  if(sourceName.length > 0) {
-    $errDiv.children('.the-source')[0].innerText = sourceName;
-  } else {
-    $errDiv.children('.the-source')[0].innerText = 'the source';
-  }
-  $('a').click(function() {
-    $errDiv.addClass('hidden');
-  });
-  console.log(sourceName);
-}
+
 
